@@ -1,35 +1,42 @@
-// Recommended order for your solution:
-// 1. Install the dotenv package.
-// 2. Add a dotenv file, put the API key in dotenv and print it.
-// 3. Install the node-fetch package.
-// 4. Create a method that calls the API to get temperature using node-fetch.
-// 5. Install the commander package.
 // 6. Create a basic commander skeleton without the actions implementation (just the metadata and commands configuration).
 // 7. Implement the first command, including the optional arguments.
 // 8. BONUS - Implement the second command.
 
 // Commander usage example for your reference:
-import chalk from "chalk";
+import dotenv from "dotenv";
+import fetch from "node-fetch";
 import { Command } from "commander";
+
+dotenv.config();
+
+const API_KEY = process.env.API_KEY;
+
 const program = new Command();
 
-program
-  .name("cli-calc")
-  .description("The best CLI calculator")
-  .version("1.0.0");
+async function apiGet(cityName) {
+   const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}`
+   );
+   const data = await response.json();
+   return data;
+}
 
 program
-  .command("add")
-  .description("Add two numbers")
-  .argument("<number>", "first operand")
-  .argument("<number>", "second operand")
-  .option("-c, --color <string>", "Result color", "white")
-  .action((firstNumber, secondNumber, options) => {
-    console.log(
-      chalk[options.color](
-        `Result: ${Number(firstNumber) + Number(secondNumber)}`
-      )
-    );
-  });
+   .name("Temperature Logger")
+   .description("Get the current temperature in a city of your choosing")
+   .version("1.0.0");
+
+program
+   .command("get-temp")
+   .description("Gets temperature")
+   .argument("<city-name>", "city name")
+   .option("-s, --scale <string>", "Celsius or Ferhanite", "c")
+   .action(async (cityName, options) => {
+      const data = await apiGet(cityName);
+      if (option.scale === 1) {
+         console.log("TEST");
+      }
+      console.log(`It's ${data.main.temp} degrees in ${cityName}`);
+   });
 
 program.parse();
